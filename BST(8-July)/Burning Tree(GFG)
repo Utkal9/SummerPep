@@ -1,0 +1,128 @@
+/*
+class Node {
+  public:
+    int data;
+    Node *left;
+    Node *right;
+
+    Node(int val) {
+        data = val;
+        left = right = NULL;
+    }
+};
+*/
+
+class Solution {
+public:
+
+    Node* createParentMapping(Node* root,
+                              int target,
+                              map<Node*, Node*>& parent) {
+
+        queue<Node*> q;
+
+        q.push(root);
+
+        parent[root] = NULL;
+
+        Node* targetNode = NULL;
+
+        while (!q.empty()) {
+
+            Node* front = q.front();
+            q.pop();
+
+            if (front->data == target)
+                targetNode = front;
+
+            if (front->left) {
+
+                parent[front->left] = front;
+                q.push(front->left);
+            }
+
+            if (front->right) {
+
+                parent[front->right] = front;
+                q.push(front->right);
+            }
+        }
+
+        return targetNode;
+    }
+
+    int burnTree(Node* targetNode,
+                 map<Node*, Node*>& parent) {
+
+        map<Node*, bool> visited;
+
+        queue<Node*> q;
+
+        q.push(targetNode);
+
+        visited[targetNode] = true;
+
+        int ans = 0;
+
+        while (!q.empty()) {
+
+            int size = q.size();
+
+            bool flag = false;
+
+            for (int i = 0; i < size; i++) {
+
+                Node* front = q.front();
+                q.pop();
+
+                if (front->left &&
+                    !visited[front->left]) {
+
+                    flag = true;
+
+                    visited[front->left] = true;
+
+                    q.push(front->left);
+                }
+
+                if (front->right &&
+                    !visited[front->right]) {
+
+                    flag = true;
+
+                    visited[front->right] = true;
+
+                    q.push(front->right);
+                }
+
+                if (parent[front] &&
+                    !visited[parent[front]]) {
+
+                    flag = true;
+
+                    visited[parent[front]] = true;
+
+                    q.push(parent[front]);
+                }
+            }
+
+            if (flag)
+                ans++;
+        }
+
+        return ans;
+    }
+
+    int minTime(Node* root, int target) {
+
+        map<Node*, Node*> parent;
+
+        Node* targetNode =
+            createParentMapping(root,
+                                target,
+                                parent);
+
+        return burnTree(targetNode,
+                        parent);
+    }
+};
